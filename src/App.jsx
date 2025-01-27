@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import Search from './components/search'
+import Search from './components/Search'
+import MovieCard from './components/MovieCard'
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -60,23 +61,14 @@ function App() {
       <Search onSearch={(term) => setSearchTerm(term)} />
       <h2 className='m-4'>{searchTerm}</h2>
       <section className='all-movies'>
-        <h2 classname='m-4'>All Movies</h2>
+        <h2 className='m-4'>All Movies</h2>
         {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
         {isLoading ? (
           <p>Loading...</p>
         ) : (
           <ul>
             {movieList.map((movie) => (
-              <li key={movie.id} className='list-none my-5 flex flex-col items-center text-white'>
-                <h3>{movie.title}</h3>
-                <img
-                  className='w-64 rounded-lg border-2 border-gray-300 shadow-lg'  
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
-                  alt={movie.title} 
-                  />
-                <p>{movie.overview}</p>
-              
-              </li>
+              <MovieCard key={movie.id} movie={movie}/>
             ))}
           </ul>
         )}
