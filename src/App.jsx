@@ -22,6 +22,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchMovies = async (searchTerm) => {
+    setIsLoading(true);
+    setErrorMessage(null);
     try {
       const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
       const response = await fetch(endpoint, API_OPTIONS);
@@ -34,11 +36,15 @@ function App() {
       if(data.response === 'False') {
         setErrorMessage(data.Error || 'failed to fetch movies');
         setMovieList([]);
-        return;
+      } else {
+        console.log(data.results);
+        setMovieList(data.results);
       }
     } catch (error) {
       console.error(`Error fetching movies: ${error}`);
       setErrorMessage('Error fetching movies. Please try again later.');
+    } finally{
+      setIsLoading(false);
     }
   }
 
@@ -52,10 +58,28 @@ function App() {
       <button className='text-gradient' onClick={() => setCount(count + 1)}>click me</button>
       <h2>You've clicked the button {count} times...</h2>
       <Search onSearch={(term) => setSearchTerm(term)} />
-      <h2>{searchTerm}</h2>
+      <h2 className='m-4'>{searchTerm}</h2>
       <section className='all-movies'>
-        <h2>All Movies</h2>
+        <h2 classname='m-4'>All Movies</h2>
         {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <ul>
+            {movieList.map((movie) => (
+              <li key={movie.id} className='list-none my-5 flex flex-col items-center text-white'>
+                <h3>{movie.title}</h3>
+                <img
+                  className='w-64 rounded-lg border-2 border-gray-300 shadow-lg'  
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
+                  alt={movie.title} 
+                  />
+                <p>{movie.overview}</p>
+              
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
     </>

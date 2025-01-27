@@ -14,11 +14,11 @@ const Search = ({ onSearch }) => {
     return (
         <div>
             <input
-                className='search border border-gray-300 rounded-md p-2 text-gray-800'
                 type="text"
                 value={query}
                 onChange={handleInputChange}
                 placeholder="Search..."
+                className='search border border-gray-300 rounded-md p-2 text-white bg-gray-800'
             />
         </div>
     );
