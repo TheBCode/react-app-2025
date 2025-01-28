@@ -22,11 +22,13 @@ function App() {
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchMovies = async (searchTerm) => {
+  const fetchMovies = async (query = '') => {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+      const endpoint = query
+      ?
+       `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}` : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
       const response = await fetch(endpoint, API_OPTIONS);
 
       if (!response.ok) {
@@ -50,8 +52,8 @@ function App() {
   }
 
   useEffect(() => {
-    fetchMovies();
-  }, [])
+    fetchMovies(searchTerm);
+  }, [searchTerm])
 
   return (
     <>
@@ -59,9 +61,9 @@ function App() {
       <button className='text-gradient' onClick={() => setCount(count + 1)}>click me</button>
       <h2>You've clicked the button {count} times...</h2>
       <Search onSearch={(term) => setSearchTerm(term)} />
-      <h2 className='m-4'>{searchTerm}</h2>
       <section className='all-movies'>
-        <h2 className='m-4'>All Movies</h2>
+      
+        {searchTerm? <h2 className='m-4'>{searchTerm}</h2> : <h2 className='m-4'>All Movies</h2> }
         {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
         {isLoading ? (
           <p>Loading...</p>
