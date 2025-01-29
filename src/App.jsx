@@ -19,7 +19,12 @@ const API_OPTIONS = {
 }
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(() => {
+    const savedCount = localStorage.getItem('count');
+    return savedCount !== null ? parseInt(savedCount, 10) : 0;
+  });
+  // const [savCount, setSavCount] = useState(localStorage.getItem('count') || 0);
+
   const [searchTerm, setSearchTerm] = useState('');
 
   const [errorMessage, setErrorMessage] = useState(null);
@@ -83,6 +88,12 @@ function App() {
   useEffect(() => {
     fetchTrendingMovies();
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('count', count);
+  }, [count])
+
+  
 
   return (
     <>
