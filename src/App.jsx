@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import Search from './components/Search'
-import MovieCard from './components/MovieCard'
+import MovieCard from './components/MovieCard.jsx'
 import { useDebounce } from 'react-use'
 
 
-import { updateSearchCount } from './appwrite'
+import { updateSearchCount, getTrendingMovies } from './appwrite'
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -26,6 +26,8 @@ function App() {
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+
+  const [trendingMovies, setTrendingMovies] = useState([]);
 
   useDebounce(() => {
     setDebouncedSearchTerm(searchTerm);
@@ -65,19 +67,47 @@ function App() {
     }
   }
 
+  const fetchTrendingMovies = async () => {
+    try {
+      const movies = await getTrendingMovies();
+      setTrendingMovies(movies);
+    } catch (error) {
+      console.error(`Error fetching trending movies: ${error}`);
+    }
+  }
+
   useEffect(() => {
     fetchMovies(debouncedSearchTerm);
   }, [debouncedSearchTerm])
+
+  useEffect(() => {
+    fetchTrendingMovies();
+  }, [])
 
   return (
     <>
       <h1>Hey</h1> 
       <button className='text-gradient' onClick={() => setCount(count + 1)}>click me</button>
       <h2>You've clicked the button {count} times...</h2>
+
+      {trendingMovies.length > 0 && (
+        <section className='trending'>
+        <h2>Trending Movies</h2>
+        <ul>
+          {trendingMovies.map((movie, index) => (
+            <li key={movie.$id}>
+            <p>{index + 1}</p>
+            <img src={movie.poster_url} alt={movie.title} />
+            </li>
+          ))}
+        </ul>
+      </section>
+      )}
+
       <Search onSearch={(term) => setSearchTerm(term)} />
       <section className='all-movies'>
       
-        {searchTerm? <h2 className='m-4'>{searchTerm}</h2> : <h2 className='m-4'>All Movies</h2> }
+        {searchTerm ? <h2 className='m-4'>{searchTerm}</h2> : <h2 className='m-4'>All Movies</h2> }
         {errorMessage && <p className='text-red-500'>{errorMessage}</p>}
         {isLoading ? (
           <p>Loading...</p>
